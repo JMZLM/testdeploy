@@ -3,6 +3,7 @@ import requests
 import threading
 import cv2
 import os
+import gdown
 from ultralytics import YOLO
 from urllib.parse import urlencode
 
@@ -19,6 +20,19 @@ REDIRECT_URI = 'http://localhost:8080/callback'
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
 SPOTIFY_TOKEN_URL = "https://accounts.spotify.com/api/token"
 SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1"
+
+# Google Drive file ID of your YOLO model (you can get this from the shareable link)
+MODEL_URL = "https://drive.google.com/uc?id=15T5uc8iMm5Fs8XQIHaRy8W6LYQrVErCQ"
+
+# Function to download YOLO model weights from Google Drive
+def download_model():
+    output_path = "../Yolo-Weights"  # Save to this location
+    gdown.download(MODEL_URL, output_path, quiet=False)
+
+# Modify your YOLO initialization to download the model if not already present
+if not os.path.exists("../Yolo-Weights"):
+    print("Downloading YOLO model...")
+    download_model()
 
 # Initialize YOLO model
 model = YOLO("../Yolo-Weights/best.pt")
