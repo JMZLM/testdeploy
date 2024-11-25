@@ -12,9 +12,9 @@ app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
 
 # Spotify API credentials
-CLIENT_ID = 'fdfcbb82df104a2ea67df35410eed1f6'
-CLIENT_SECRET = '3280a9e0b5804025bcff0d5367eec8eb'
-REDIRECT_URI = 'https://testdeploy-2kd9.onrender.com/callback'
+CLIENT_ID = os.getenv('SPOTIFY_CLIENT_ID')
+CLIENT_SECRET = os.getenv('SPOTIFY_CLIENT_SECRET')
+REDIRECT_URI = os.getenv('SPOTIFY_REDIRECT_URI')
 
 # Spotify URLs
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
