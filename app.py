@@ -2,8 +2,10 @@ from flask import Flask, redirect, url_for, request, session, render_template, j
 import requests
 import threading
 import cv2
+import os
 from ultralytics import YOLO
 from urllib.parse import urlencode
+
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_here'
@@ -218,4 +220,5 @@ def get_detected_emotion():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8080)
+    port = int(os.environ.get("PORT", 8080))  # Default to port 8080 if PORT is not set
+    app.run(debug=False, host='0.0.0.0', port=port)
