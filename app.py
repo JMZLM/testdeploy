@@ -14,7 +14,7 @@ app.secret_key = 'your_secret_key_here'
 # Spotify API credentials
 CLIENT_ID = 'fdfcbb82df104a2ea67df35410eed1f6'
 CLIENT_SECRET = '3280a9e0b5804025bcff0d5367eec8eb'
-REDIRECT_URI = 'http://localhost:8080/callback'
+REDIRECT_URI = 'https://testdeploy-2kd9.onrender.com/callback'
 
 # Spotify URLs
 SPOTIFY_AUTH_URL = "https://accounts.spotify.com/authorize"
