@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feel My Rhythm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feel My Rhythm</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+
+</head>
+<body>
+    <header>
+        <h1>Feel My Rhythm</h1>
+    </header>
+    <main>
+        <section id="emotion-display">
+            <h2>Detected Emotion</h2>
+            <p id="detected-emotion">No emotion detected yet.</p>
+        </section>
+        <section id="current-song">
+            <h2>Now Playing</h2>
+            <p id="song-details">No songs available. Detect your emotion to get started.</p>
+            <img id="album-cover" src="" alt="Album Cover" style="display: none; max-width: 100%; border-radius: 10px;">
+            <div id="playback-controls">
+                <button onclick="control('previous')"><i class="fas fa-step-backward"></i></button>
+                <button id="play-pause-btn" onclick="control('playpause')"><i class="fas fa-play"></i>  <!-- Initially show the play icon --></button>
+                <button onclick="control('next')"><i class="fas fa-step-forward"></i></button>
+            </div>
+        </section>
+
+
+
+        <section id="detect-emotion">
+            <a href="{{ url_for('detect_emotion') }}">Detect Emotion</a>
+        </section>
+    </main>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
+    <script>
+
+        function updateDetectedEmotion() {
+        fetch('/get_detected_emotion')
+            .then(response => response.json())
+            .then(data => {
+                const emotionDisplay = document.getElementById('detected-emotion');
+                emotionDisplay.innerText = data.detected_emotion || "No emotion detected yet.";
+            })
+            .catch(error => console.error('Error fetching detected emotion:', error));
+    }
+
+    // Update every 2 seconds
+    setInterval(updateDetectedEmotion, 2000);
+
+
+
+
+
+        const accessToken = "{{ access_token }}";
+        let isNextTriggered = false;
+
+          // Track if the song is paused or playing
+    let isPaused = false;
+
+    // Spotify Web Playback SDK setup remains the same
+    window.onSpotifyWebPlaybackSDKReady = () => {
+        const player = new Spotify.Player({
+            name: 'Feel My Rhythm',
+            getOAuthToken: cb => { cb(accessToken); },
+            volume: 0.5,
+        });
+
+        player.addListener('player_state_changed', state => {
+    if (state) {
+        const currentTrack = state.track_window.current_track;
+        const songDetails = document.getElementById('song-details');
+        const albumCover = document.getElementById('album-cover');
+
+        // Update song details and album cover
+        if (currentTrack) {
+            songDetails.innerText = `${currentTrack.name} by ${currentTrack.artists[0].name}`;
+            albumCover.src = currentTrack.album.images[0].url;
+            albumCover.style.display = 'block';
+        }
+
+        // Detect song ending and play next
+        if (state.paused && state.position === 0 && !state.loading) {
+            if (!isNextTriggered) {
+                console.log("Song finished. Playing next song...");
+                isNextTriggered = true; // Set flag to true
+                control('next'); // Call the `next` action
+            }
+        } else if (!state.paused) {
+            isNextTriggered = false; // Reset flag when playback resumes
+        }
+    }
+});
+        player.addListener('ready', ({ device_id }) => {
+            fetch(`https://api.spotify.com/v1/me/player`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    device_ids: [device_id],
+                    play: true,
+                }),
+            });
+        });
+
+        player.connect();
+    };
+
+    // Function to control play/pause and update button
+    function control(action) {
+    const apiUrl = `/control/${action}`;
+    fetch(apiUrl)
+        .then(response => response.json())
+        .then(data => {
+            const songDetails = document.getElementById('song-details');
+            const albumCover = document.getElementById('album-cover');
+            const playPauseButton = document.getElementById('play-pause-btn');
+
+            if (data.song) {
+                // Update song details
+                songDetails.innerText = `${data.song.name} by ${data.song.artist}`;
+                albumCover.src = data.song.cover_url;
+                albumCover.style.display = 'block';
+            }
+
+            // Toggle play/pause button icon based on the action
+            if (data.is_paused) {
+                // If the song is paused, show the play icon
+                playPauseButton.innerHTML = '<i class="fas fa-play"></i>';
+            } else {
+                // If the song is playing, show the pause icon
+                playPauseButton.innerHTML = '<i class="fas fa-pause"></i>';
+            }
+        })
+        .catch(error => alert(`Error: ${error.message}`));
+}
+
+    </script>
+</body>
+</html>

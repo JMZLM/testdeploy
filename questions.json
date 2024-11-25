@@ -1,0 +1,19 @@
+[
+  {
+    "question": "You find it takes effort to introduce yourself to other people.",
+    "options": {
+      "A": "Agree",
+      "B": "Disagree"
+    },
+    "dimension": "E/I"
+  },
+  {
+    "question": "You consider yourself more practical than creative.",
+    "options": {
+      "A": "Agree",
+      "B": "Disagree"
+    },
+    "dimension": "N/S"
+  }
+
+]

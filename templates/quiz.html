@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>MBTI Quiz</title>
+</head>
+<body>
+  <h2>Take the MBTI Quiz</h2>
+  <form action="/submit_quiz" method="POST">
+    {% for question in questions %}
+      <div>
+        <p>{{ question.question }}</p>
+        <label>
+          <input type="radio" name="answer_{{ loop.index }}" value="A" required>
+          {{ question.options.A }}
+        </label>
+        <label>
+          <input type="radio" name="answer_{{ loop.index }}" value="B">
+          {{ question.options.B }}
+        </label>
+      </div>
+    {% endfor %}
+    <button type="submit">Submit</button>
+  </form>
+</body>
+</html>
