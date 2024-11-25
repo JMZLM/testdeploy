@@ -26,16 +26,16 @@ MODEL_URL = "https://drive.google.com/uc?id=15T5uc8iMm5Fs8XQIHaRy8W6LYQrVErCQ"
 
 # Function to download YOLO model weights from Google Drive
 def download_model():
-    output_path = "/opt/render/project/Yolo-Weights"  # Save to this location
+    output_path = "../Yolo-Weights"  # Save to this location
     gdown.download(MODEL_URL, output_path, quiet=False)
 
 # Modify your YOLO initialization to download the model if not already present
-if not os.path.exists("/opt/render/project/Yolo-Weights"):
+if not os.path.exists("../Yolo-Weights"):
     print("Downloading YOLO model...")
     download_model()
 
 # Initialize YOLO model
-model = YOLO("/opt/render/project/Yolo-Weights/best.pt")  # Use the absolute path here
+model = YOLO("../Yolo-Weights/best.pt")
 classNames = ["anger", "disgust", "fear", "happy", "neutral", "sad", "neutral"]
 
 # Global variables
